@@ -1,11 +1,36 @@
-# Created by otrad at 03/02/2022
+# Created by Andres at 05/02/2022
 
 from collections import Counter
 import numpy as np
 from sklearn import metrics
+import spacy
+
 from core.xml_explorer import read_xml, show, naive_balance
 from core.classifier_with_transformers import do_training, transform_from_problems_to_data_set
 from core.classifier_traditional import TraditionalClassifier
+
+nlp = spacy.load("en_core_web_sm")
+
+
+def is_semantic(token):
+    """
+    Basic filter. Consider using w2v
+    :param token:
+    :return:
+    """
+    if token.pos_ == "NOUN" or token.pos_ == "VERB" or \
+            token.pos_ == "ADV" or token.pos_ == "ADP" or token.pos_ == "NUM":
+        return True
+    return False
+
+
+def simplify(text):
+
+    simplified_text = []
+    doc = nlp(text)
+    for token in doc:
+        simplified_text.append(str(token.lemma))
+    return " ".join(simplified_text)
 
 
 def adapt_data(problems, x_data, y_data):
@@ -17,15 +42,15 @@ def adapt_data(problems, x_data, y_data):
     :return:
     """
     for item in problems:
-        x_data.append(item.question + " " + item.answer)
-        y_data.append(item.solution)
 
+        x_data.append(simplify(item.question) + " > " + simplify(item.answer))
+        y_data.append(item.solution)
 
 def main():
 
     instances, label_to_id = read_xml("data/grade_data.xml")
     np.random.seed(112)
-    show(instances, True)
+    show(instances)
     training_problems, validation_problems, testing_problems = np.split(instances,
                                          [int(.8 * len(instances)),
                                           int(.9 * len(instances))])

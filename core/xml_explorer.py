@@ -1,4 +1,4 @@
-# Created by Andres at 02/02/2022
+# Created by Andres at 05/02/2022
 import re
 from collections import Counter
 import xml.etree.ElementTree as ET
@@ -81,8 +81,9 @@ def read_xml(file_name):
         problem.description = get_text("ProblemDescription", child)
         problem.set_references(get_text("ReferenceAnswers", child))
         problem.solution = get_solution(child)
+
         instances.append(problem)
-        if not problem.solution in label_to_id_dict:
+        if problem.solution not in label_to_id_dict:
             id += 1
             label_to_id_dict[problem.solution] = id
     return instances, label_to_id_dict

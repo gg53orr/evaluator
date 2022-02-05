@@ -1,4 +1,4 @@
-# Created by otrad at 03/02/2022
+# Created by Andres at 05/02/2022
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import SGDClassifier
 from sklearn.svm import LinearSVC
@@ -8,7 +8,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from joblib import dump, load
 
 
-def get_sv():
+def get_sgd():
     s = SGDClassifier(loss='log', penalty='l2',
                   alpha=1e-3,
                   random_state=42,
@@ -16,19 +16,21 @@ def get_sv():
     return s
 
 
-def get_linear():
+def get_svc():
 
     linear_svc = LinearSVC()
     return linear_svc
 
 
 class TraditionalClassifier:
-
+    """
+    A trivial classifier
+    """
     def __init__(self):
-        c = get_sv()
+        classifier_algorithm = get_svc()
         self.text_clf = Pipeline([('vect', CountVectorizer()),
         ('tfidf', TfidfTransformer()),
-            ('clf', c)])
+            ('clf', classifier_algorithm)])
 
     def fit(self, x, y, path):
         """
@@ -44,12 +46,20 @@ class TraditionalClassifier:
     def load(self, path):
         self.text_clf = load()
 
-    def predict_proba(self, a_text):
-
+    def predict_proba(self, a_text: str):
+        """
+        Prediction and probability
+        :param a_text:
+        :return:
+        """
         predictions = self.text_clf.predict_proba(a_text)
         return predictions
 
-    def predict(self, a_text):
-
+    def predict(self, a_text: str):
+        """
+        Prediction
+        :param a_text:
+        :return:
+        """
         predictions = self.text_clf.predict(a_text)
         return predictions

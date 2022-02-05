@@ -8,7 +8,7 @@ import spacy
 from core.xml_explorer import read_xml, show, naive_balance
 from core.classifier_with_transformers import do_training, transform_from_problems_to_data_set
 from core.classifier_traditional import TraditionalClassifier
-
+from core.semantic_support import build_w2v
 nlp = spacy.load("en_core_web_sm")
 
 
@@ -33,18 +33,25 @@ def simplify(text):
     return " ".join(simplified_text)
 
 
-def adapt_data(problems, x_data, y_data):
+def adapt_data(problems, x_data, y_data, corpus):
     """
     Just expanding the data
     :param problems:
     :param x_data:
     :param y_data:
+    :param corpus:
     :return:
     """
     for item in problems:
 
         x_data.append(simplify(item.question) + " > " + simplify(item.answer))
         y_data.append(item.solution)
+        if corpus is not None:
+            corpus.append(item.question)
+            corpus.append(item.answer)
+            for reference in item.references:
+                corpus.append(reference)
+
 
 def main():
 
@@ -59,12 +66,17 @@ def main():
 
     x_train = []
     y_train = []
+    corpus = []
+    adapt_data(training_problems, x_train, y_train, corpus)
+    adapt_data(validation_problems, x_train, y_train, corpus)
 
-    adapt_data(training_problems, x_train, y_train)
-
+    # We could use a word2vec from corpus
+    print(len(corpus), " amount of sentences for w2v")
+    build_w2v(corpus, "data/")
+    # The w2v here can be used to produce more examples
     x_test = []
     y_test = []
-    adapt_data(testing_problems, x_test, y_test)
+    adapt_data(testing_problems, x_test, y_test, None)
 
     classifier = TraditionalClassifier()
     path = "data/teacher.joblib"
@@ -79,6 +91,7 @@ def main():
     print(metrics.classification_report(y_test,
                                         predicted,
                                         target_names = the_labels))
+
 
 
 if __name__ == "__main__":

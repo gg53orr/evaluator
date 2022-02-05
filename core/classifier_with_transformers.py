@@ -8,8 +8,8 @@ from tqdm import tqdm
 from transformers import BertTokenizer
 from transformers import BertModel
 
-from utils.container_manager import Problem, DataSet
-from utils.bert_trainer import BertTrainer
+from core.container_manager import Problem, DataSet
+from core.bert_classifier import BertTrainer
 
 
 def transform_from_problems_to_data_set(items : List[Problem]) -> DataSet:
@@ -30,11 +30,36 @@ def transform_from_problems_to_data_set(items : List[Problem]) -> DataSet:
 
 
 def do_training(training: DataSet, validation: DataSet):
-
+    """
+    Do the training of the model
+    :param training:
+    :param validation:
+    :return:
+    """
     the_trainer = BertTrainer()
     the_trainer.create_model()
     the_trainer.train(training.texts, training.labels,
                       validation.texts, validation.labels)
 
 
+def do_training_and_testing(training: DataSet, validation: DataSet, testing: DataSet):
+    """
+    Do the training of the model
+    :param training:
+    :param validation:
+    :param testing:
+    :return:
+    """
+    the_trainer = BertTrainer()
+    the_trainer.train_test(training.texts, training.labels,
+                      validation.texts, validation.labels,testing.texts, testing.labels, 2)
 
+
+def do_testing(testing: DataSet):
+    """
+
+    :param testing:
+    :return:
+    """
+    bert_classifier = BertTrainer()
+    bert_classifier.test(testing.texts, testing.labels)

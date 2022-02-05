@@ -2,7 +2,7 @@
 import re
 from collections import Counter
 import xml.etree.ElementTree as ET
-from utils.container_manager import Problem
+from core.container_manager import Problem
 
 
 def get_text(a_key, node):

@@ -3,9 +3,9 @@
 from collections import Counter
 import numpy as np
 from sklearn import metrics
-from utils.xml_explorer import read_xml, show, naive_balance
-from utils.classifier_with_transformers import do_training, transform_from_problems_to_data_set
-from utils.classifier_traditional import TraditionalClassifier
+from core.xml_explorer import read_xml, show, naive_balance
+from core.classifier_with_transformers import do_training, transform_from_problems_to_data_set
+from core.classifier_traditional import TraditionalClassifier
 
 
 def adapt_data(problems, x_data, y_data):
